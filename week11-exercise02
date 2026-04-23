@@ -1,0 +1,14 @@
+const int ledPin = 9;   // PWM pin for brightness
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    int brightness = Serial.parseInt();   // read number sent from p5
+    brightness = constrain(brightness, 0, 255);
+    analogWrite(ledPin, brightness);
+  }
+}

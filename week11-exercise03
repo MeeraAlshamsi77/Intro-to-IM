@@ -1,0 +1,38 @@
+//sends analog sensor data to p5 and listens for "bounce" messages to trigger the LED
+
+const int sensorPin = A1;
+const int ledPin = 9;
+//assigns A1 as the analog input for the sensor and pin 9 as the LED output
+
+String incomingMessage = "";
+
+void setup() {
+  Serial.begin(9600); //starts serial communication at 9600 baud
+  pinMode(ledPin, OUTPUT);//sets LED pin as output
+  digitalWrite(ledPin, LOW); //initializes it to off
+} 
+
+void loop() {
+  int sensorValue = analogRead(sensorPin);
+  Serial.println(sensorValue); //reads analog value (0–1023) from potentiometer and sends it to p5 via serial
+
+  while (Serial.available() > 0) {
+    char inChar = (char)Serial.read(); //loops while data is coming in from p5 and reads each character into inChar
+
+    if (inChar == '\n') { 
+      incomingMessage.trim(); //this checks if data is coming from p5 and reads it one character at a time
+
+      if (incomingMessage == "bounce") { //compares received message to "bounce" to trigger LED action
+        digitalWrite(ledPin, HIGH);
+        delay(150);
+        digitalWrite(ledPin, LOW); //turns LED on for a short moment to indicate ball bounce, then turns it off
+      }
+
+      incomingMessage = ""; //this clears stored message so the next incoming message can be run through
+    } else {
+      incomingMessage += inChar; //adds each incoming character to build the full message string
+    }
+  }
+
+  delay(20); // small delay to control rate of data being received 
+}
